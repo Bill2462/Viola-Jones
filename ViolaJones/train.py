@@ -159,6 +159,11 @@ def computeError(trainingSamples, weights, classifier):
     for i in range(0, len(trainingSamples)):
         sample = trainingSamples[i]
         error += weights[i]*(classifier.classify(sample[0], 0, 0) != sample[1])
+        
+    # used dataset is very small so it is possible to have error = 0, in this case set error to small value so program
+    # does not fail
+    if error == 0:
+        error = 0.001
     return error
 
 """
@@ -313,4 +318,4 @@ def adaBoost(trainingSamples, weights, featuresSet, classifierCount, threadCount
         for i in range(0, len(weights)):
             weights[i] = weights[i]*np.power(b, 1-bestError)
 
-    return classifiers, classifierWeights, featuresSet, weights
+    return classifiers, classifierWeights

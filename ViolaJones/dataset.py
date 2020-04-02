@@ -125,7 +125,10 @@ def normalize(images):
     for img in images:
         img = img.astype(np.float32) / 255
         img -= img.mean()
-        img /= img.std()
+        if img.std() == 0:
+            img /= 1
+        else:
+            img /= img.std()
         normalized.append(img)
     return normalized
 
@@ -225,15 +228,12 @@ class HandsDataset():
         positive_test  = self.positiveSamples[:len(self.positiveSamples)//3]
         negative_test  = self.negativeSamples[:len(self.negativeSamples)//3]
         
-        self.positive_count = len(positive_train)
-        self.negative_count = len(negative_train)
+        self.positive_train_count = len(positive_train)
+        self.negative_train_count = len(negative_train)
+        
+        self.trainingDataset = list(zip(positive_train, np.ones(len(positive_train), dtype=int)))
+        self.trainingDataset += list(zip(negative_train, np.zeros(len(negative_train), dtype=int)))
+        
+        self.testDataset = list(zip(positive_test, np.ones(len(positive_test), dtype=int)))
+        self.testDataset += list(zip(negative_test, np.zeros(len(negative_test), dtype=int)))
 
-        self.trainingDataset = list(zip(positive_train, np.ones(len(positive_train))))
-        self.trainingDataset += list(zip(negative_train, np.zeros(len(negative_train))))
-        
-        self.testDataset = list(zip(positive_test, np.ones(len(positive_test))))
-        self.testDataset += list(zip(negative_test, np.zeros(len(negative_test))))
-        
-        #random shuffling
-        random.shuffle(self.trainingDataset)
-        random.shuffle(self.testDataset)

@@ -30,6 +30,14 @@ class WeakClassifier():
         self.threshold = threshold
         self.polarity = polarity
     
+    def setScale(self, scale):
+        """
+        Set scale for the underlying haar feature.
+        
+        :param scale: Scale of the feature.
+        """
+        self.feature.setScale(scale)
+    
     """
     :param int_image: Integral image
     :param x: Position of the detection frame (X)
@@ -39,19 +47,41 @@ class WeakClassifier():
         return self.polarity*self.feature.computeScore(int_image, x, y) < self.polarity*self.threshold
     
 class StrongClassifier():
-    def __init__(self, classifiers, weights):
+    """
+    Strong classifier.
+    :param classifiers: Trained weak classifiers.
+    :param weights: Weights corresponding to Trained weak classifiers.
+    :param thresholdOffset: Offset added to the detection threshold.
+    """
+    def __init__(self, classifiers, weights, thresholdOffset=0):
         self.classifiers = classifiers
         self.weights = weights
+        self.thresholdOffset = thresholdOffset
         
-    """
-    :param int_image: Integral image
-    :param x: Position of the detection frame (X)
-    :param y: Position of the detection frame (Y)
-    """
+    def setScale(self, scale):
+        """
+        Set scale for all underlying classifiers.
+        :param scale: scale
+        """
+        for i in range(0, len(self.classifiers)):
+            self.classifiers[i].setScale(scale)
+    
+    def setThresholdOffset(self, offset):
+        """
+        Threshold offset is added to the detection threshold.
+        :param thresholdOffset: Offset added to the detection threshold.
+        """
+        self.thresholdOffset = offset
+
     def classify(self, int_image, x, y):
+        """
+        :param int_image: Integral image
+        :param x: Position of the detection frame (X)
+        :param y: Position of the detection frame (Y)
+        """
         #let each classifier vote
         score = 0
         for i in range(0, len(self.classifiers)):
             score += self.classifiers[i].classify(int_image, x, y)*self.weights[i]
         
-        return score >= np.sum(self.weights)
+        return score >= np.sum(self.weights) + self.thresholdOffset

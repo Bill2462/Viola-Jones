@@ -41,6 +41,20 @@ class Haar():
         self.width = width
         self.height = height
 
+    def setScale(self, scale):
+        """
+        Set scale. All dimensions will be rescaled by this scale.
+        :param scale: Scale
+        """
+        
+        #there is some bug here but I don't have to find it
+        # basically just multiply all size parameters by scale and then round
+        #self.top_left = (int(self.top_left[0]*scale), int(self.top_left[1]*scale))
+        #self.bottom_right = (int(self.bottom_right[0]*scale), int(self.bottom_right[1]*scale))
+        #self.width = int(self.width*scale)
+        #self.height = int(self.height*scale)
+        pass
+
         """
         :param int_img: Integral image object
         :param x: Position of the detection frame (X)
